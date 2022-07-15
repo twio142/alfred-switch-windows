@@ -37,12 +37,14 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
     
     let windowTitle : String
     let processName : String
+    let bundleId : String
     
-    init(raw: AnyObject, index: Int?, windowTitle: String, processName: String) {
+    init(raw: AnyObject, index: Int?, windowTitle: String, processName: String, bundleId: String) {
         tabRaw = raw
         self.index = index
         self.windowTitle = windowTitle
         self.processName = processName
+        self.bundleId = bundleId
     }
     
     var rawItem: AnyObject {
@@ -60,7 +62,14 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         }
         return performSelectorByName(name: "title", defaultValue: "")
     }
-    
+
+    var tabId : Int {
+        guard let id = performSelectorByName(name: "id", defaultValue: -1) else {
+            return -1
+        }
+        return id
+    }
+
     var tabIndex : Int {
         guard let i = index else {
             return 0
@@ -105,10 +114,12 @@ class BrowserWindow : BrowserNamedEntity {
     private let windowRaw : AnyObject
     
     let processName : String
+    let bundleId : String
     
-    init(raw: AnyObject, processName: String) {
+    init(raw: AnyObject, processName: String, bundleId: String) {
         windowRaw = raw
         self.processName = processName
+        self.bundleId = bundleId
     }
     
     var rawItem: AnyObject {
@@ -120,9 +131,9 @@ class BrowserWindow : BrowserNamedEntity {
         
         return result.enumerated().map { (index, element) in
             if processName == "iTerm" {
-                return iTermTab(raw: element, index: index + 1, windowTitle: self.title, processName: self.processName)
+                return iTermTab(raw: element, index: index + 1, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
             }
-            return BrowserTab(raw: element, index: index + 1, windowTitle: self.title, processName: self.processName)
+            return BrowserTab(raw: element, index: index + 1, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
         }
     }
 
@@ -138,37 +149,31 @@ class BrowserWindow : BrowserNamedEntity {
 class BrowserApplication : BrowserEntity {
     private let app : SBApplication
     private let processName : String
+    private let bundleId : String
     
     static func connect(processName: String) -> BrowserApplication? {
 
-        let ws = NSWorkspace.shared
+        let runningBrowsers = NSWorkspace.shared.runningApplications.filter { $0.localizedName == processName }
 
-        guard let fullPath = ws.fullPath(forApplication: processName) else {
-            return nil
-        }
-
-        let bundle = Bundle(path: fullPath)
-        
-        guard let bundleId = bundle?.bundleIdentifier else {
-            return nil
-        }
-        
-        let runningBrowsers = ws.runningApplications.filter { $0.bundleIdentifier == bundleId }
-        
         guard runningBrowsers.count > 0 else {
             return nil
         }
-        
+
+        guard let bundleId = runningBrowsers[0].bundleIdentifier else {
+            return nil
+        }
+
         guard let app = SBApplication(bundleIdentifier: bundleId) else {
             return nil
         }
 
-        return BrowserApplication(app: app, processName: processName)
+        return BrowserApplication(app: app, processName: processName, bundleId: bundleId)
     }
     
-    init(app: SBApplication, processName: String) {
+    init(app: SBApplication, processName: String, bundleId: String) {
         self.app = app
         self.processName = processName
+        self.bundleId = bundleId
     }
     
     var rawItem: AnyObject {
@@ -178,7 +183,7 @@ class BrowserApplication : BrowserEntity {
     var windows : [BrowserWindow] {
         let result = performSelectorByName(name: "windows", defaultValue: [AnyObject]())
         return result.map {
-            return BrowserWindow(raw: $0, processName: self.processName)
+            return BrowserWindow(raw: $0, processName: self.processName, bundleId: self.bundleId)
         }
     }
 }

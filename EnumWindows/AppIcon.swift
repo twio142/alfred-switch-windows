@@ -18,12 +18,7 @@ struct AppIcon {
     }
     
     var path : String {
-        return self.pathInternal ?? ""
-    }
-    
-    private var pathInternal : String? {
-        let appPath = NSWorkspace.shared.runningApplications.filter { $0.localizedName == self.appName }[0].bundleURL?.path
-
+        let appPath = appName | { NSWorkspace.shared.urlForApplication(withBundleIdentifier: $0)?.path }
         return appPath ?? ""
     }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 
 class WindowInfoDict : Searchable, ProcessNameProtocol {
     private let windowInfoDict : Dictionary<NSObject, AnyObject>;
@@ -34,6 +35,10 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     var pid : Int {
         return self.dictItem(key: "kCGWindowOwnerPID", defaultValue: -1)
     }
+
+    var bundleId : String {
+        return NSWorkspace.shared.runningApplications.filter { $0.processIdentifier == self.pid }[0].bundleIdentifier ?? ""
+}
     
     var bounds : CGRect {
         let dict = self.dictItem(key: "kCGWindowBounds", defaultValue: NSDictionary())
@@ -45,10 +50,6 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     
     var alpha : Float {
         return self.dictItem(key: "kCGWindowAlpha", defaultValue: 0.0)
-    }
-    
-    var tabIndex: Int {
-        return 0
     }
     
     func dictItem<T>(key : String, defaultValue : T) -> T {
