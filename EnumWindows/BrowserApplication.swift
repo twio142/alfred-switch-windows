@@ -70,16 +70,6 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         return i
     }
 
-    var tabId : Int {
-        if self.rawItem.responds(to: Selector("id")) {
-            guard let id = performSelectorByName(name: "id", defaultValue: 0) else {
-                return 0
-            }
-            return id
-        }
-        return 0
-    }
-    
     var searchStrings : [String] {
         return ["Browser", self.url, self.title, self.processName]
     }
@@ -96,7 +86,7 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
 
 class iTermTab : BrowserTab {
     override var title : String {
-        guard self.rawItem.responds(to: Selector("currentSession")),
+        guard self.rawItem.responds(to: Selector(("currentSession"))),
             let session: AnyObject = performSelectorByName(name: "currentSession", defaultValue: nil),
             session.responds(to: #selector(NSImage.name))
         else {

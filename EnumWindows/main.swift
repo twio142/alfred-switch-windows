@@ -23,17 +23,17 @@ func search(query: String, onlyTabs: Bool) {
     
     var allActiveWindows : [WindowInfoDict] = Windows.all
     
-    for browserName in ["Safari浏览器", "Safari Technology Preview",
-                        "Google Chrome", "Google Chrome Canary",
-                        "Opera", "Opera Beta", "Opera Developer",
-                        "Brave Browser", "iTerm"] {
-        allActiveWindows = searchBrowserTabsIfNeeded(processName: browserName,
-                                                     windows: allActiveWindows,
-                                                     query: query,
-                                                     results: &results) // inout!
-    }
-    
-    if !onlyTabs {
+    if onlyTabs {
+        for browserName in ["Safari浏览器", // "Safari Technology Preview",
+                            "Google Chrome", // "Google Chrome Canary",
+                            // "Opera", "Opera Beta", "Opera Developer", "Brave Browser", 
+                            "iTerm"] {
+            allActiveWindows = searchBrowserTabsIfNeeded(processName: browserName,
+                                                         windows: allActiveWindows,
+                                                         query: query,
+                                                         results: &results) // inout!
+        }
+    } else {
         results.append(allActiveWindows.search(query: query))
     }
     
