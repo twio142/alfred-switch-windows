@@ -57,7 +57,7 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
 
     var title : String {
         /* Safari uses 'name' as the tab title, while most of the browsers have 'title' there */
-        if self.rawItem.responds(to: Selector("name")) {
+        if self.rawItem.responds(to: #selector(NSImage.name)) {
             return performSelectorByName(name: "name", defaultValue: "")
         }
         return performSelectorByName(name: "title", defaultValue: "")
@@ -95,12 +95,12 @@ class iTermTab : BrowserTab {
     override var title : String {
         guard self.rawItem.responds(to: Selector("currentSession")),
             let session: AnyObject = performSelectorByName(name: "currentSession", defaultValue: nil),
-            session.responds(to: Selector("name"))
+            session.responds(to: #selector(NSImage.name))
         else {
             return self.windowTitle
         }
 
-        let selectorResult = session.perform(Selector("name"))
+        let selectorResult = session.perform(#selector(NSImage.name))
         guard let retainedValue = selectorResult?.takeRetainedValue(),
             let tabName = retainedValue as? String
         else {
@@ -131,15 +131,15 @@ class BrowserWindow : BrowserNamedEntity {
         
         return result.enumerated().map { (index, element) in
             if processName == "iTerm" {
-                return iTermTab(raw: element, index: index + 1, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
+                return iTermTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
             }
-            return BrowserTab(raw: element, index: index + 1, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
+            return BrowserTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
         }
     }
 
     var title : String {
         /* Safari uses 'name' as the tab title, while most of the browsers have 'title' there */
-        if self.rawItem.responds(to: Selector("name")) {
+        if self.rawItem.responds(to: #selector(NSImage.name)) {
             return performSelectorByName(name: "name", defaultValue: "")
         }
         return performSelectorByName(name: "title", defaultValue: "")
