@@ -18,23 +18,13 @@ struct AppIcon {
     }
     
     var path : String {
-        return self.pathInternal ?? "switch.png"
+        return self.pathInternal ?? ""
     }
     
     private var pathInternal : String? {
-        let appPath = self.appName | { NSWorkspace.shared.fullPath(forApplication: $0) }
-        
-        guard var iconFileName = appPath | { Bundle(path: $0) } | { $0.infoDictionary?["CFBundleIconFile"] } | { $0 as? String } else {
-            return nil
-        }
-        
-        if !iconFileName.hasSuffix(".icns") {
-            iconFileName.append(".icns")
-        }
-        
-        let url = appPath | { URL(fileURLWithPath: $0) } | { $0.appendingPathComponent("Contents/Resources/\(iconFileName)") }
-        
-        return url?.path ?? nil
+        let appPath = NSWorkspace.shared.runningApplications.filter { $0.localizedName == self.appName }[0].bundleURL?.path
+
+        return appPath ?? ""
     }
 }
 

@@ -39,7 +39,7 @@ func search(query: String, onlyTabs: Bool) {
     
     let alfredItems : [AlfredItem] = results.flatMap { $0 }
 
-    print(AlfredDocument(withItems: alfredItems).xml.xmlString)
+    print(AlfredDocument(withItems: alfredItems).jsonString)
 }
 
 func handleCatalinaScreenRecordingPermission() {

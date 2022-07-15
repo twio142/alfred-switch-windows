@@ -62,6 +62,15 @@ extension AlfredItem {
         
         return element
     }
+
+    var jsonItem : [String : Any] {
+        return [
+            "title": self.title,
+            "subtitle": self.subtitle,
+            "arg": self.arg.serialized,
+            "icon": ["path": self.icon, "type": "fileicon"],
+        ]
+    }
 }
 
 struct AlfredDocument {
@@ -78,5 +87,16 @@ struct AlfredDocument {
             root.addChild(item.xmlNode)
         }
         return XMLDocument(rootElement: root)
+    }
+
+    var jsonString : String {
+        func json(from object:Any) -> String? {
+            guard let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]) else {
+                return nil
+            }
+            return String(data: data, encoding: String.Encoding.utf8)
+        }
+        
+        return json(from: ["items": self.items.map { return $0.jsonItem }]) ?? ""
     }
 }
