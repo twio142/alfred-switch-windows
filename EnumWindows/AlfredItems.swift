@@ -8,7 +8,7 @@ extension WindowInfoDict : AlfredItem {
 }
 
 extension BrowserTab : AlfredItem {
-    var arg: String { return "" };
+    var arg: String { return "\(self.url)" };
     var subtitle : String { return "\(self.url)" };
-    var variables : [String : Any] { return ["tabIndex":self.tabIndex, "windowTitle":self.windowTitle, "bundleId":self.bundleId] };
+    var variables : [String : Any] { return ["tabIndex":self.tabIndex, "windowTitle":self.windowTitle, "bundleId":self.bundleId, "tabTitle":self.title] };
 }

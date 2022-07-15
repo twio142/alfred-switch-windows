@@ -63,18 +63,21 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         return performSelectorByName(name: "title", defaultValue: "")
     }
 
-    var tabId : Int {
-        guard let id = performSelectorByName(name: "id", defaultValue: -1) else {
-            return -1
-        }
-        return id
-    }
-
     var tabIndex : Int {
         guard let i = index else {
             return 0
         }
         return i
+    }
+
+    var tabId : Int {
+        if self.rawItem.responds(to: Selector("id")) {
+            guard let id = performSelectorByName(name: "id", defaultValue: 0) else {
+                return 0
+            }
+            return id
+        }
+        return 0
     }
     
     var searchStrings : [String] {
