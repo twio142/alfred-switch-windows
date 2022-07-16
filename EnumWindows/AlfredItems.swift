@@ -4,7 +4,7 @@ extension WindowInfoDict : AlfredItem {
     var title : String { return self.name };
     var subtitle : String { return self.processName };
     var arg: String { return "" };
-    var variables : [String : Any] { return ["bundleId":self.bundleId, "windowTitle":self.windowTitle] };
+    var variables : [String : Any] { return ["bundleId":self.bundleId, "windowTitle":self.windowTitle, "windowId":self.number] };
 }
 
 extension BrowserTab : AlfredItem {
