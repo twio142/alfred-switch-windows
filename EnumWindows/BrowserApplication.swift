@@ -142,10 +142,6 @@ class BrowserWindow : BrowserNamedEntity {
         }
         return performSelectorByName(name: "title", defaultValue: "")
     }
-
-    var winId : Int {
-        return performSelectorByName(name: "id", defaultValue: 0)
-    }
 }
 
 class BrowserApplication : BrowserEntity {
