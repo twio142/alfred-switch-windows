@@ -8,7 +8,7 @@ extension WindowInfoDict : AlfredItem {
 }
 
 extension BrowserTab : AlfredItem {
-    var arg: String { return "\(self.url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]))" };
+    var arg: String { return "\(self.url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]))" }; // get original url before chrome extension `tab suspender`
     var subtitle : String { return "\(self.url)" };
     var variables : [String : Any] { return ["tabIndex":self.tabIndex, "windowTitle":self.windowTitle, "bundleId":self.bundleId, "tabTitle":self.title] };
 }

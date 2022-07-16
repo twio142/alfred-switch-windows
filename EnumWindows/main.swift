@@ -56,7 +56,7 @@ func handleCatalinaScreenRecordingPermission() {
                                               firstWindow.number,
                                               [.boundsIgnoreFraming, .bestResolution])
     if windowImage == nil {
-        debugPrint("Before using this app, you need to give permission in System Preferences > Security & Privacy > Privacy > Screen Recording.\nPlease authorize and re-launch.")
+        debugPrint("This workflow requires permission for screen recording. Go to System Preferences > Security & Privacy > Privacy > Screen Recording, authorize Alfred and re-launch.")
         exit(1)
     }
 }
@@ -89,7 +89,7 @@ for command in CommandLine.commands() {
     default:
         print("Unknown command!")
         print("Commands:")
-        print("--search=<query> to search for active windows/Safari tabs.")
+        print("--search=<query> to search for active windows/ tabs.")
         exit(1)
     }
 }
