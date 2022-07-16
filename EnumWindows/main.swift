@@ -10,6 +10,7 @@ func searchBrowserTabsIfNeeded(processName: String,
     
     let browserTabs =
         BrowserApplication.connect(processName: processName)?.windows
+            .filter { $0.title.count > 0 } // filter out Chrome PWAs
             .flatMap { return $0.tabs }
             .search(query: query)
     

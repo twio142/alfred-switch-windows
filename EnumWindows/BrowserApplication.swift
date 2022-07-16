@@ -76,7 +76,8 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
 
     var searchStrings : [String] {
         let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
-        return [self.url, self.title, self.processName, fileName]
+        let urlMatch = self.url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]).replacingOccurrences(of: "^https?://(www\\d?\\.|m\\.)?([^\\/]+)\\.(co\\.uk|co\\.jp|[a-z]+)/.+", with: "$2", options: [.regularExpression]).replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression])
+        return [urlMatch, self.title, self.processName, fileName]
     }
     
     /*
