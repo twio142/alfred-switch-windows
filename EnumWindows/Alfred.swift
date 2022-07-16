@@ -3,24 +3,23 @@ import Foundation
 protocol AlfredItem {
     var arg : String { get };
     var title : String { get };
-    var icon : String { get };
     var subtitle : String { get };
     var processName : String { get };
     var variables : [String : Any] { get };
     var bundleId : String { get };
+    var fullPath : String { get };
+    var searchStrings : [String] { get };
 }
 
-
 extension AlfredItem {
-
-    var icon : String { return AppIcon(appName: self.bundleId).path };
 
     var jsonItem : [String : Any] {
         return [
             "title": self.title,
             "subtitle": self.subtitle,
             "arg": self.arg,
-            "icon": ["path": self.icon, "type": "fileicon"],
+            "icon": ["path": self.fullPath, "type": "fileicon"],
+            "match": self.searchStrings.joined(separator: " "),
             "variables": self.variables
         ]
     }

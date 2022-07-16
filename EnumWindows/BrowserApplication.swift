@@ -70,8 +70,13 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         return i
     }
 
+    var fullPath : String {
+        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: self.bundleId)?.path ?? ""
+    }
+
     var searchStrings : [String] {
-        return ["Browser", self.url, self.title, self.processName]
+        let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
+        return [self.url, self.title, self.processName, fileName]
     }
     
     /*
@@ -136,6 +141,10 @@ class BrowserWindow : BrowserNamedEntity {
             return performSelectorByName(name: "name", defaultValue: "")
         }
         return performSelectorByName(name: "title", defaultValue: "")
+    }
+
+    var winId : Int {
+        return performSelectorByName(name: "id", defaultValue: 0)
     }
 }
 

@@ -66,9 +66,14 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     var hashValue: Int {
         return "\(self.processName)-\(self.name)".hashValue
     }
+
+    var fullPath : String {
+        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: self.bundleId)?.path ?? ""
+    }
     
     var searchStrings: [String] {
-        return [self.processName, self.name]
+        let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
+        return [self.processName, fileName, self.name]
     }
     
     var isProbablyMenubarItem : Bool {
