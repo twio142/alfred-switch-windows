@@ -4,9 +4,7 @@ protocol AlfredItem {
     var arg : String { get };
     var title : String { get };
     var subtitle : String { get };
-    var processName : String { get };
     var variables : [String : Any] { get };
-    var bundleId : String { get };
     var fullPath : String { get };
     var searchStrings : [String] { get };
 }

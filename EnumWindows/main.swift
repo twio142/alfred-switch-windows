@@ -1,15 +1,15 @@
 import Foundation
 
 /// Removes browser window from the list of windows and adds tabs to the results array
-func searchBrowserTabsIfNeeded(processName: String,
+func searchBrowserTabsIfNeeded(bundleId: String,
                                windows: [WindowInfoDict],
                                query: String,
                                results: inout [[AlfredItem]]) -> [WindowInfoDict] {
     
-    let activeWindowsExceptBrowser = windows.filter { ($0.processName != processName) }
+    let activeWindowsExceptBrowser = windows.filter { ($0.bundleId != bundleId) }
     
     let browserTabs =
-        BrowserApplication.connect(processName: processName)?.windows
+        BrowserApplication.connect(bundleId: bundleId)?.windows
             .filter { $0.title.count > 0 } // filter out Chrome PWAs
             .flatMap { return $0.tabs }
             .search(query: query)
@@ -25,11 +25,10 @@ func search(query: String, onlyTabs: Bool) {
     var allActiveWindows : [WindowInfoDict] = Windows.all
     
     if onlyTabs {
-        for browserName in ["Safari浏览器", // "Safari Technology Preview",
-                            "Google Chrome", // "Google Chrome Canary",
-                            // "Opera", "Opera Beta", "Opera Developer", "Brave Browser", 
-                            "iTerm"] {
-            allActiveWindows = searchBrowserTabsIfNeeded(processName: browserName,
+        for browserId in ["com.apple.Safari",
+                          "com.google.Chrome",
+                          "com.googlecode.iterm2"] {
+            allActiveWindows = searchBrowserTabsIfNeeded(bundleId: browserId,
                                                          windows: allActiveWindows,
                                                          query: query,
                                                          results: &results) // inout!

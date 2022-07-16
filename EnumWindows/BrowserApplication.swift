@@ -38,13 +38,15 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
     let windowTitle : String
     let processName : String
     let bundleId : String
+    let fullPath : String
     
-    init(raw: AnyObject, index: Int?, windowTitle: String, processName: String, bundleId: String) {
+    init(raw: AnyObject, index: Int?, windowTitle: String, processName: String, bundleId: String, fullPath: String) {
         tabRaw = raw
         self.index = index
         self.windowTitle = windowTitle
         self.processName = processName
         self.bundleId = bundleId
+        self.fullPath = fullPath
     }
     
     var rawItem: AnyObject {
@@ -70,13 +72,9 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         return i
     }
 
-    var fullPath : String {
-        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: self.bundleId)?.path ?? ""
-    }
-
     var searchStrings : [String] {
         /* Use also the app's file name in search string */
-        let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
+        let fileName = Bundle(path: self.fullPath)?.infoDictionary?["CFBundleName"] as? String ?? ""
         /* Match url only by the core part of its domain */
         let urlMatch = self.url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]).replacingOccurrences(of: "^https?://(www\\d?\\.|m\\.)?([^\\/]+)\\.(co\\.uk|co\\.jp|[a-z]+)/.+", with: "$2", options: [.regularExpression]).replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression])
         return [urlMatch, self.title, self.processName, fileName]
@@ -116,11 +114,13 @@ class BrowserWindow : BrowserNamedEntity {
     
     let processName : String
     let bundleId : String
+    let fullPath : String
     
-    init(raw: AnyObject, processName: String, bundleId: String) {
+    init(raw: AnyObject, processName: String, bundleId: String, fullPath: String) {
         windowRaw = raw
         self.processName = processName
         self.bundleId = bundleId
+        self.fullPath = fullPath
     }
     
     var rawItem: AnyObject {
@@ -132,9 +132,9 @@ class BrowserWindow : BrowserNamedEntity {
         
         return result.enumerated().map { (index, element) in
             if processName == "iTerm" {
-                return iTermTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
+                return iTermTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
             }
-            return BrowserTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId)
+            return BrowserTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
         }
     }
 
@@ -151,16 +151,17 @@ class BrowserApplication : BrowserEntity {
     private let app : SBApplication
     private let processName : String
     private let bundleId : String
+    private let fullPath : String
     
-    static func connect(processName: String) -> BrowserApplication? {
+    static func connect(bundleId: String) -> BrowserApplication? {
 
-        let runningBrowsers = NSWorkspace.shared.runningApplications.filter { $0.localizedName == processName }
+        let runningBrowsers = NSWorkspace.shared.runningApplications.filter { $0.bundleIdentifier == bundleId }
 
         guard runningBrowsers.count > 0 else {
             return nil
         }
 
-        guard let bundleId = runningBrowsers[0].bundleIdentifier else {
+        guard let fullPath = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId)?.path else {
             return nil
         }
 
@@ -168,13 +169,18 @@ class BrowserApplication : BrowserEntity {
             return nil
         }
 
-        return BrowserApplication(app: app, processName: processName, bundleId: bundleId)
+        guard let processName = runningBrowsers[0].localizedName else {
+            return nil
+        }
+
+        return BrowserApplication(app: app, processName: processName, bundleId: bundleId, fullPath: fullPath)
     }
     
-    init(app: SBApplication, processName: String, bundleId: String) {
+    init(app: SBApplication, processName: String, bundleId: String, fullPath: String) {
         self.app = app
         self.processName = processName
         self.bundleId = bundleId
+        self.fullPath = fullPath
     }
     
     var rawItem: AnyObject {
@@ -184,7 +190,7 @@ class BrowserApplication : BrowserEntity {
     var windows : [BrowserWindow] {
         let result = performSelectorByName(name: "windows", defaultValue: [AnyObject]())
         return result.map {
-            return BrowserWindow(raw: $0, processName: self.processName, bundleId: self.bundleId)
+            return BrowserWindow(raw: $0, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
         }
     }
 }
