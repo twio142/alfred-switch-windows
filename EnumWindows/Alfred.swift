@@ -38,6 +38,9 @@ struct AlfredDocument {
             return String(data: data, encoding: String.Encoding.utf8)
         }
         
+        guard self.items.count > 0 else {
+            return "{\"items\": [{\"title\": \"No Results\", \"valid\": false}]}"
+        }
         return json(from: ["items": self.items.map { return $0.jsonItem }]) ?? ""
     }
 }
