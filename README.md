@@ -1,4 +1,36 @@
-# Swift Windows Switcher
+# Swift Window Switcher
+
+Alfred Workflow for switching between windows or browser/ iTerm tabs.
+
+## Prerequisites
+
+1. To make this workflow work, don't forget to allow Alfred to screen recording (Security & Privacy → Accessibility).
+
+2. This version requires [Hammerspoon](https://github.com/Hammerspoon/hammerspoon). You need to install the app and its command line tool, if you haven't.
+
+    - Install Hammerspoon's cli:
+
+    ```
+    hs.ipc.cliInstall()
+    ```
+
+## Modifications
+
+- Use nice and neat JSON output.
+
+- In 'window mode', list only windows, including browser windows. Leave the tabs to 'tab mode'.
+
+- Use [Hammerspoon](https://github.com/Hammerspoon/hammerspoon) to manipulate windows and apps, which is more efficient and accurate.
+
+- Use Alfred's result filtering and improve matching strings.
+
+## Credits
+
+> Inspration is taken from [Windows Switcher](https://www.alfredforum.com/topic/9326-a-simple-windows-switcher/) workflow from Emanuele Munafò (kudozz! 🔥).
+
+Modified from [Swift Window Switcher](https://github.com/mandrigin/AlfredSwitchWindows) by Igor Mandrigin.
+
+---
 
 ## Catalina Users
 
@@ -65,7 +97,7 @@ NSLog("isPlaying: \(isPlaying)")
 
 ## License
 
-Copyright 2017 © Igor Mandrigin
+Copyright 2022 © twio142
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
