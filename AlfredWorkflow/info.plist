@@ -507,7 +507,7 @@ done</string>
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./EnumWindows --search=""</string>
+				<string>./EnumWindows --win=</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -727,7 +727,7 @@ run = argv =&gt; {
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./EnumWindows --search-tabs=""</string>
+				<string>./EnumWindows --tab=</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
 				<key>scriptfile</key>
@@ -811,6 +811,25 @@ run = argv =&gt; {
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>externaltriggerid</key>
+				<string>add_to_lc</string>
+				<key>passinputasargument</key>
+				<true/>
+				<key>passvariables</key>
+				<true/>
+				<key>workflowbundleid</key>
+				<string>com.nyako520.link</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.callexternaltrigger</string>
+			<key>uid</key>
+			<string>1258DA14-4ABD-4A02-B83E-284FF8C43AB5</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>count</key>
 				<integer>1</integer>
 				<key>keychar</key>
@@ -826,25 +845,6 @@ run = argv =&gt; {
 			<string>alfred.workflow.output.dispatchkeycombo</string>
 			<key>uid</key>
 			<string>11839846-50EA-49D1-90D3-E6ED8B0187B1</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>externaltriggerid</key>
-				<string>add_to_lc</string>
-				<key>passinputasargument</key>
-				<true/>
-				<key>passvariables</key>
-				<true/>
-				<key>workflowbundleid</key>
-				<string>com.nyako520.link</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.callexternaltrigger</string>
-			<key>uid</key>
-			<string>1258DA14-4ABD-4A02-B83E-284FF8C43AB5</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -911,66 +911,6 @@ run = argv =&gt; {
 			<string>7F7C2A46-F54A-46DE-8CF3-E17DDB1F3998</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>alfredfiltersresults</key>
-				<false/>
-				<key>alfredfiltersresultsmatchmode</key>
-				<integer>0</integer>
-				<key>argumenttreatemptyqueryasnil</key>
-				<true/>
-				<key>argumenttrimmode</key>
-				<integer>0</integer>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>escaping</key>
-				<integer>0</integer>
-				<key>keyword</key>
-				<string>test</string>
-				<key>queuedelaycustom</key>
-				<integer>3</integer>
-				<key>queuedelayimmediatelyinitially</key>
-				<true/>
-				<key>queuedelaymode</key>
-				<integer>0</integer>
-				<key>queuemode</key>
-				<integer>1</integer>
-				<key>runningsubtext</key>
-				<string></string>
-				<key>script</key>
-				<string>import ScriptingBridge
-import AppKit
-
-var bundleId = "com.apple.Safari"
-
-let app = SBApplication(bundleIdentifier: bundleId)
-
-var fullPath = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId)?.path ?? ""
-
-var name = Bundle(path: fullPath)?.infoDictionary?["CFBundleName"] ?? ""
-
-print(name)</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>subtext</key>
-				<string></string>
-				<key>title</key>
-				<string></string>
-				<key>type</key>
-				<integer>10</integer>
-				<key>withspace</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.scriptfilter</string>
-			<key>uid</key>
-			<string>1E2BCA31-D30D-400F-A4B0-38D0291B521A</string>
-			<key>version</key>
-			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1195,13 +1135,6 @@ Modified from [Swift Window Switcher](https://github.com/mandrigin/AlfredSwitchW
 			<real>225</real>
 			<key>ypos</key>
 			<real>345</real>
-		</dict>
-		<key>1E2BCA31-D30D-400F-A4B0-38D0291B521A</key>
-		<dict>
-			<key>xpos</key>
-			<real>450</real>
-			<key>ypos</key>
-			<real>305</real>
 		</dict>
 		<key>219C180E-E768-4C55-BEB3-04F80412032A</key>
 		<dict>
