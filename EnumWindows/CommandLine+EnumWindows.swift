@@ -20,8 +20,8 @@ extension CommmandLineCommand {
     }
 }
 
-struct OnlyTabsCommand : CommmandLineCommand {
-    internal static var name: String { return "--search-tabs" }
+struct TabsCommand : CommmandLineCommand {
+    internal static var name: String { return "--tab" }
     
     let query : String;
     
@@ -30,8 +30,8 @@ struct OnlyTabsCommand : CommmandLineCommand {
     }
 }
 
-struct SearchCommand : CommmandLineCommand {
-    internal static var name: String { return "--search" }
+struct WindowsCommand : CommmandLineCommand {
+    internal static var name: String { return "--win" }
 
     let query : String;
     
@@ -45,8 +45,8 @@ extension CommandLine {
     static func commands() -> [CommmandLineCommand] {
         var result : [CommmandLineCommand?] = []
         for arg in self.arguments {
-            result.append(SearchCommand.fromArgv(argv: arg))
-            result.append(OnlyTabsCommand.fromArgv(argv: arg))
+            result.append(WindowsCommand.fromArgv(argv: arg))
+            result.append(TabsCommand.fromArgv(argv: arg))
         }
         return result.flatMap { (command: CommmandLineCommand?) -> [CommmandLineCommand] in
             guard let c = command else { return [] }

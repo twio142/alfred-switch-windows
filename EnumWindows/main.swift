@@ -19,12 +19,12 @@ func searchBrowserTabsIfNeeded(bundleId: String,
     return activeWindowsExceptBrowser
 }
 
-func search(query: String, onlyTabs: Bool) {
+func search(query: String, tabMode: Bool) {
     var results : [[AlfredItem]] = []
     
     var allActiveWindows : [WindowInfoDict] = Windows.all
     
-    if onlyTabs {
+    if tabMode {
         for browserId in ["com.apple.Safari",
                           "com.google.Chrome",
                           "com.googlecode.iterm2"] {
@@ -68,7 +68,7 @@ handleCatalinaScreenRecordingPermission()
 let start = DispatchTime.now() // <<<<<<<<<< Start time
 
 for _ in 0...100 {
-    search(query: "pull", onlyTabs: false)
+    search(query: "pull", tabMode: false)
 }
 let end = DispatchTime.now()   // <<<<<<<<<<   end time
 let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
@@ -79,16 +79,17 @@ print("TIME SPENT: \(timeInterval)")
 
 for command in CommandLine.commands() {
     switch command {
-    case let searchCommand as SearchCommand:
-        search(query: searchCommand.query, onlyTabs: false)
+    case let searchCommand as WindowsCommand:
+        search(query: searchCommand.query, tabMode: false)
         exit(0)
-    case let searchCommand as OnlyTabsCommand:
-        search(query: searchCommand.query, onlyTabs: true)
+    case let searchCommand as TabsCommand:
+        search(query: searchCommand.query, tabMode: true)
         exit(0)
     default:
         print("Unknown command!")
         print("Commands:")
-        print("--search=<query> to search for active windows/ tabs.")
+        print("--win=<query> to search for active windows.")
+        print("--tab=<query> to search for tabs.")
         exit(1)
     }
 }
