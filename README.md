@@ -44,8 +44,6 @@ The context on why that is needed is [here](https://github.com/mandrigin/AlfredS
 My little "weekend" project.
 Alfred workflow to switch between open windows in the system and Safari tabs.
 
-![](/demo_concise.gif)
-
 ## Features
 - Switch between the open windows using Alfred
 - Switch between the Safari tabs using Alfred
