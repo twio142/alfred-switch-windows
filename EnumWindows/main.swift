@@ -86,11 +86,8 @@ for command in CommandLine.commands() {
         search(query: searchCommand.query, tabMode: true)
         exit(0)
     default:
-        print("Unknown command!")
-        print("Commands:")
-        print("--win=<query> to search for active windows.")
-        print("--tab=<query> to search for tabs.")
+        print("Usage:")
+        print("[--win=<query>] | [--tab=<query>]")
         exit(1)
     }
 }
-
