@@ -6,28 +6,28 @@ protocol Searchable {
 
 extension Array where Element:Searchable {
     func search(query: String) -> [Element] {
-        guard query.count > 0 else {
+        guard !query.isEmpty else {
             return self
         }
         let components : ArraySlice<String> =
             ArraySlice(
                 query.components(separatedBy:  " ")
                     .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                    .filter { $0.count > 0 }
+                    .filter { !$0.isEmpty }
             )
         return search(components: components)
     }
-    
+
     private func search(components: ArraySlice<String>) -> [Element] {
         guard let q = components.first else {
             return self
         }
-        
+
         let result = self.filter {
             let hits = $0.searchStrings.filter { $0.localizedCaseInsensitiveContains(q) }
-            return hits.count > 0
+            return !hits.isEmpty
         }
-        
+
         return result.search(components: components.dropFirst(1))
     }
 }

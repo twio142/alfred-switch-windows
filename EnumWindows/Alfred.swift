@@ -25,11 +25,11 @@ extension AlfredItem {
 
 struct AlfredDocument {
     let items : [AlfredItem]
-    
+
     init(withItems: [AlfredItem]) {
         self.items = withItems;
     }
-    
+
     var jsonString : String {
         func json(from object:Any) -> String? {
             guard let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]) else {
@@ -37,8 +37,8 @@ struct AlfredDocument {
             }
             return String(data: data, encoding: String.Encoding.utf8)
         }
-        
-        guard self.items.count > 0 else {
+
+        guard !self.items.isEmpty else {
             return "{\"items\": [{\"title\": \"No Results\", \"valid\": false}]}"
         }
         return json(from: ["items": self.items.map { return $0.jsonItem }]) ?? ""

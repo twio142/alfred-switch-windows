@@ -22,11 +22,11 @@ extension BrowserEntity {
         guard let retainedValue = selectorResult?.takeRetainedValue() else {
             return defaultValue
         }
-        
+
         guard let result = retainedValue as? T else {
             return defaultValue
         }
-        
+
         return result
     }
 }
@@ -34,12 +34,12 @@ extension BrowserEntity {
 class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
     private let tabRaw : AnyObject
     private let index : Int?
-    
+
     let windowTitle : String
     let processName : String
     let bundleId : String
     let fullPath : String
-    
+
     init(raw: AnyObject, index: Int?, windowTitle: String, processName: String, bundleId: String, fullPath: String) {
         tabRaw = raw
         self.index = index
@@ -48,11 +48,11 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         self.bundleId = bundleId
         self.fullPath = fullPath
     }
-    
+
     var rawItem: AnyObject {
         return self.tabRaw
     }
-        
+
     var url : String {
         return performSelectorByName(name: "URL", defaultValue: "")
     }
@@ -79,12 +79,12 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         let urlMatch = self.url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]).replacingOccurrences(of: "^https?://(www\\d?\\.|m\\.)?([^\\/]+)\\.(co\\.uk|co\\.jp|[a-z]+)/.+", with: "$2", options: [.regularExpression]).replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression])
         return [urlMatch, self.title, self.processName, fileName]
     }
-    
+
     /*
      (lldb) po raw.perform("URL").takeRetainedValue()
      https://encrypted.google.com/search?hl=en&q=objc%20mac%20list%20Browser%20tabs#hl=en&q=swift+call+metho+by+name
-     
-     
+
+
      (lldb) po raw.perform("name").takeRetainedValue()
      scriptingbridge Browsertab - Google Search
  */
@@ -111,25 +111,25 @@ class iTermTab : BrowserTab {
 
 class BrowserWindow : BrowserNamedEntity {
     private let windowRaw : AnyObject
-    
+
     let processName : String
     let bundleId : String
     let fullPath : String
-    
+
     init(raw: AnyObject, processName: String, bundleId: String, fullPath: String) {
         windowRaw = raw
         self.processName = processName
         self.bundleId = bundleId
         self.fullPath = fullPath
     }
-    
+
     var rawItem: AnyObject {
         return self.windowRaw
     }
-    
+
     var tabs : [BrowserTab] {
         let result = performSelectorByName(name: "tabs", defaultValue: [AnyObject]())
-        
+
         return result.enumerated().map { (index, element) in
             if processName == "iTerm" {
                 return iTermTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
@@ -152,12 +152,12 @@ class BrowserApplication : BrowserEntity {
     private let processName : String
     private let bundleId : String
     private let fullPath : String
-    
+
     static func connect(bundleId: String) -> BrowserApplication? {
 
         let runningBrowsers = NSWorkspace.shared.runningApplications.filter { $0.bundleIdentifier == bundleId }
 
-        guard runningBrowsers.count > 0 else {
+        guard !runningBrowsers.isEmpty else {
             return nil
         }
 
@@ -175,18 +175,18 @@ class BrowserApplication : BrowserEntity {
 
         return BrowserApplication(app: app, processName: processName, bundleId: bundleId, fullPath: fullPath)
     }
-    
+
     init(app: SBApplication, processName: String, bundleId: String, fullPath: String) {
         self.app = app
         self.processName = processName
         self.bundleId = bundleId
         self.fullPath = fullPath
     }
-    
+
     var rawItem: AnyObject {
         return app
     }
-    
+
     var windows : [BrowserWindow] {
         let result = performSelectorByName(name: "windows", defaultValue: [AnyObject]())
         return result.map {

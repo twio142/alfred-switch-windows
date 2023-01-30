@@ -3,11 +3,11 @@ import AppKit
 
 class WindowInfoDict : Searchable, ProcessNameProtocol {
     private let windowInfoDict : Dictionary<NSObject, AnyObject>;
-    
+
     init(rawDict : UnsafeRawPointer) {
         windowInfoDict = unsafeBitCast(rawDict, to: CFDictionary.self) as Dictionary
     }
-    
+
     var name : String {
         return self.dictItem(key: "kCGWindowName", defaultValue: "")
     }
@@ -15,7 +15,7 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     var hasName : Bool {
         return self.windowInfoDict["kCGWindowName" as NSObject] != nil
     }
-    
+
     var windowTitle: String {
         return self.name
     }
@@ -23,27 +23,27 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     var number: UInt32 {
         return self.dictItem(key: "kCGWindowNumber", defaultValue: 0)
     }
-    
+
     var processName : String {
         return self.dictItem(key: "kCGWindowOwnerName", defaultValue: "")
     }
-    
+
     var appName : String {
         return self.dictItem(key: "kCGWindowOwnerName", defaultValue: "")
     }
-    
+
     var pid : Int {
         return self.dictItem(key: "kCGWindowOwnerPID", defaultValue: -1)
     }
 
     var bundleId : String {
         let app = NSWorkspace.shared.runningApplications.filter { $0.processIdentifier == self.pid }
-        guard app.count > 0 else {
+        guard !app.isEmpty else {
             return ""
         }
         return app[0].bundleIdentifier ?? ""
 }
-    
+
     var bounds : CGRect {
         let dict = self.dictItem(key: "kCGWindowBounds", defaultValue: NSDictionary())
         guard let bounds = CGRect.init(dictionaryRepresentation: dict) else {
@@ -51,22 +51,22 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
         }
         return bounds
     }
-    
+
     var alpha : Float {
         return self.dictItem(key: "kCGWindowAlpha", defaultValue: 0.0)
     }
-    
+
     func dictItem<T>(key : String, defaultValue : T) -> T {
         guard let value = windowInfoDict[key as NSObject] as? T else {
             return defaultValue
         }
         return value
     }
-    
+
     static func == (lhs: WindowInfoDict, rhs: WindowInfoDict) -> Bool {
         return lhs.processName == rhs.processName && lhs.name == rhs.name
     }
-    
+
     var hashValue: Int {
         return "\(self.processName)-\(self.name)".hashValue
     }
@@ -74,18 +74,18 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     var fullPath : String {
         return NSWorkspace.shared.urlForApplication(withBundleIdentifier: self.bundleId)?.path ?? ""
     }
-    
+
     var searchStrings: [String] {
         let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
         return [self.processName, fileName, self.name]
     }
-    
+
     var isProbablyMenubarItem : Bool {
         // Our best guess, if it's very small and attached to the top of the screen, it is probably something
         // related to the menubar
-        return (self.bounds.minY <= 0 && self.bounds.height < 30) || self.bundleId.count == 0
+        return (self.bounds.minY <= 0 && self.bounds.height < 30) || self.bundleId.isEmpty
     }
-    
+
     var isVisible : Bool {
         return self.alpha > 0
     }
@@ -116,19 +116,19 @@ struct Windows {
             guard let wl = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) else {
                 return []
             }
-            
+
             return (0..<CFArrayGetCount(wl)).flatMap { (i : Int) -> [WindowInfoDict] in
                 guard let windowInfoRef = CFArrayGetValueAtIndex(wl, i) else {
                     return []
                 }
-                
+
                 let wi = WindowInfoDict(rawDict: windowInfoRef)
-                
+
                 // We don't want to clutter our output with unnecessary windows that we can't switch to anyway.
-                guard wi.name.count > 0 && !filterList.contains(wi.bundleId) && !wi.isProbablyMenubarItem && wi.isVisible else {
+                guard !wi.name.isEmpty && !filterList.contains(wi.bundleId) && !wi.isProbablyMenubarItem && wi.isVisible else {
                     return []
                 }
-                
+
                 return [wi]
             }
         }
