@@ -1,29 +1,30 @@
 import Foundation
+import AppKit
 
 /// Removes browser window from the list of windows and adds tabs to the results array
 func searchBrowserTabsIfNeeded(bundleId: String,
                                windows: [WindowInfoDict],
                                query: String,
                                results: inout [[AlfredItem]]) -> [WindowInfoDict] {
-    
+
     let activeWindowsExceptBrowser = windows.filter { ($0.bundleId != bundleId) }
-    
+
     let browserTabs =
         BrowserApplication.connect(bundleId: bundleId)?.windows
             .filter { !$0.title.isEmpty } // filter out Chrome PWAs
             .flatMap { return $0.tabs }
             .search(query: query)
-    
+
     results.append(browserTabs ?? [])
-    
+
     return activeWindowsExceptBrowser
 }
 
 func search(query: String, tabMode: Bool) {
     var results : [[AlfredItem]] = []
-    
+
     var allActiveWindows : [WindowInfoDict] = Windows.all
-    
+
     if tabMode {
         for browserId in ["com.apple.Safari",
                           "com.google.Chrome",
@@ -36,7 +37,7 @@ func search(query: String, tabMode: Bool) {
     } else {
         results.append(allActiveWindows.search(query: query))
     }
-    
+
     let alfredItems : [AlfredItem] = results.flatMap { $0 }
 
     print(AlfredDocument(withItems: alfredItems).jsonString)
