@@ -56,6 +56,10 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
         return self.dictItem(key: "kCGWindowAlpha", defaultValue: 0.0)
     }
 
+    var layer : Int {
+        return self.dictItem(key: "kCGWindowLayer", defaultValue: -1)
+    }
+
     func dictItem<T>(key : String, defaultValue : T) -> T {
         guard let value = windowInfoDict[key as NSObject] as? T else {
             return defaultValue
@@ -80,19 +84,13 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
         return [self.processName, fileName, self.name]
     }
 
-    var isProbablyMenubarItem : Bool {
-        // Our best guess, if it's very small and attached to the top of the screen, it is probably something
-        // related to the menubar
-        return (self.bounds.minY <= 0 && self.bounds.height < 30) || self.bundleId.isEmpty
-    }
-
     var isVisible : Bool {
-        return self.alpha > 0
+        return self.alpha > 0 && self.layer == 0
     }
 }
 
 struct Windows {
-    static var filterList : [String] = ["com.apple.dock", "com.apple.WindowManager"]
+    static var filterList : [String] = ["", "com.apple.dock", "com.apple.WindowManager"]
 
     static var any : WindowInfoDict? {
         get {
@@ -124,8 +122,7 @@ struct Windows {
 
                 let wi = WindowInfoDict(rawDict: windowInfoRef)
 
-                // We don't want to clutter our output with unnecessary windows that we can't switch to anyway.
-                guard !wi.name.isEmpty && !filterList.contains(wi.bundleId) && !wi.isProbablyMenubarItem && wi.isVisible else {
+                guard wi.isVisible && !wi.name.isEmpty && !filterList.contains(wi.bundleId) else {
                     return []
                 }
 
