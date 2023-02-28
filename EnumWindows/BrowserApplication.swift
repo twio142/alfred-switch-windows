@@ -36,14 +36,16 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
     private let index : Int?
 
     let windowTitle : String
+    let windowIndex : Int
     let processName : String
     let bundleId : String
     let fullPath : String
 
-    init(raw: AnyObject, index: Int?, windowTitle: String, processName: String, bundleId: String, fullPath: String) {
+    init(raw: AnyObject, index: Int?, windowTitle: String, windowIndex: Int, processName: String, bundleId: String, fullPath: String) {
         tabRaw = raw
         self.index = index
         self.windowTitle = windowTitle
+        self.windowIndex = windowIndex
         self.processName = processName
         self.bundleId = bundleId
         self.fullPath = fullPath
@@ -111,13 +113,15 @@ class iTermTab : BrowserTab {
 
 class BrowserWindow : BrowserNamedEntity {
     private let windowRaw : AnyObject
+    private let index : Int?
 
     let processName : String
     let bundleId : String
     let fullPath : String
 
-    init(raw: AnyObject, processName: String, bundleId: String, fullPath: String) {
+    init(raw: AnyObject, index: Int?, processName: String, bundleId: String, fullPath: String) {
         windowRaw = raw
+        self.index = index
         self.processName = processName
         self.bundleId = bundleId
         self.fullPath = fullPath
@@ -132,9 +136,9 @@ class BrowserWindow : BrowserNamedEntity {
 
         return result.enumerated().map { (index, element) in
             if processName == "iTerm" {
-                return iTermTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
+                return iTermTab(raw: element, index: index, windowTitle: self.title, windowIndex: self.windowIndex, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
             }
-            return BrowserTab(raw: element, index: index, windowTitle: self.title, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
+            return BrowserTab(raw: element, index: index, windowTitle: self.title, windowIndex: self.windowIndex, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
         }
     }
 
@@ -144,6 +148,13 @@ class BrowserWindow : BrowserNamedEntity {
             return performSelectorByName(name: "name", defaultValue: "")
         }
         return performSelectorByName(name: "title", defaultValue: "")
+    }
+
+    var windowIndex : Int {
+        guard let i = index else {
+            return 0
+        }
+        return i
     }
 }
 
@@ -189,8 +200,8 @@ class BrowserApplication : BrowserEntity {
 
     var windows : [BrowserWindow] {
         let result = performSelectorByName(name: "windows", defaultValue: [AnyObject]())
-        return result.map {
-            return BrowserWindow(raw: $0, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
+        return result.enumerated().map { (index, element) in
+            return BrowserWindow(raw: element, index: index, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
         }
     }
 }
