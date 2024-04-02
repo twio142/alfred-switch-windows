@@ -28,6 +28,7 @@ func search(query: String, tabMode: Bool) {
     if tabMode {
         for browserId in ["com.apple.Safari",
                           "com.google.Chrome",
+                          "company.thebrowser.Browser",
                           "com.googlecode.iterm2"] {
             allActiveWindows = searchBrowserTabsIfNeeded(bundleId: browserId,
                                                          windows: allActiveWindows,
