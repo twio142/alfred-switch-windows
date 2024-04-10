@@ -1,6 +1,7 @@
-EnumWindows.xcodeproj/xcuserdata/
 *.swp
 *.un~
 EnumWindows/EnumWindows
-xcuserdata/
-**/.DS_Store
+.DS_Store
+.build/
+Package.resolved
+.vscode/
