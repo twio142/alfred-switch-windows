@@ -7,6 +7,7 @@ protocol AlfredItem {
     var variables : [String : Any] { get };
     var fullPath : String { get };
     var searchStrings : [String] { get };
+    var icon: [String : Any] { get };
 }
 
 extension AlfredItem {
@@ -16,7 +17,7 @@ extension AlfredItem {
             "title": self.title,
             "subtitle": self.subtitle,
             "arg": self.arg,
-            "icon": ["path": self.fullPath, "type": "fileicon"],
+            "icon": self.icon,
             "match": self.searchStrings.joined(separator: " "),
             "variables": self.variables
         ]

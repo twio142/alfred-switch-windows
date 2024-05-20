@@ -3,40 +3,34 @@ import AppKit
 
 /// Removes browser window from the list of windows and adds tabs to the results array
 func searchBrowserTabsIfNeeded(bundleId: String,
-                               windows: [WindowInfoDict],
                                query: String,
-                               results: inout [[AlfredItem]]) -> [WindowInfoDict] {
-
-    let activeWindowsExceptBrowser = windows.filter { ($0.bundleId != bundleId) }
+                               results: inout [[AlfredItem]]) {
 
     let browserTabs =
         BrowserApplication.connect(bundleId: bundleId)?.windows
             .filter { !$0.title.isEmpty } // filter out Chrome PWAs
             .flatMap { return $0.tabs }
-            .search(query: query)
+            .search(query)
 
-    results.append(browserTabs ?? [])
-
-    return activeWindowsExceptBrowser
+    if let browserTabs = browserTabs {
+        browserTabs.getIcons()
+        results.append(browserTabs)
+    }
 }
 
 func search(query: String, tabMode: Bool) {
     var results : [[AlfredItem]] = []
 
-    var allActiveWindows : [WindowInfoDict] = Windows.all
-
     if tabMode {
         for browserId in ["com.apple.Safari",
-                          "com.google.Chrome",
-                          "company.thebrowser.Browser",
-                          "com.googlecode.iterm2"] {
-            allActiveWindows = searchBrowserTabsIfNeeded(bundleId: browserId,
-                                                         windows: allActiveWindows,
-                                                         query: query,
-                                                         results: &results) // inout!
+                                  "com.google.Chrome",
+                                  "company.thebrowser.Browser"] {
+            searchBrowserTabsIfNeeded(bundleId: browserId,
+                                      query: query,
+                                      results: &results) // inout!
         }
     } else {
-        results.append(allActiveWindows.search(query: query))
+        results.append(Windows.all.search(query))
     }
 
     let alfredItems : [AlfredItem] = results.flatMap { $0 }

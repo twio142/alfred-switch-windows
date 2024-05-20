@@ -5,7 +5,7 @@ protocol Searchable {
 }
 
 extension Array where Element:Searchable {
-    func search(query: String) -> [Element] {
+    func search(_ query: String) -> [Element] {
         guard !query.isEmpty else {
             return self
         }
