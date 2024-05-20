@@ -113,14 +113,18 @@ extension Array where Element:BrowserTab {
             LEFT OUTER JOIN favicon_bitmaps ON favicon_bitmaps.id = max_width_id.id
             GROUP BY tabs.url
         """
-        let icons: [(url: String, uid: Int64, imageData: Blob, lastUpdated: TimeInterval)]
+        var icons: [(url: String, uid: Int64, imageData: Blob, lastUpdated: TimeInterval)] = []
         do {
-            icons = try db.prepare(FAVICON_SEARCH).map { row in
-                (url: row[0] as! String, uid: row[1] as! Int64, imageData: row[2] as! Blob, lastUpdated: row[3] as! TimeInterval)
+            try db.prepare(FAVICON_SEARCH).forEach { row in
+                if let url = row[0] as? String,
+                   let uid = row[1] as? Int64,
+                   let imageData = row[2] as? Blob,
+                   let lastUpdated = row[3] as? TimeInterval {
+                    icons.append((url: url, uid: uid, imageData: imageData, lastUpdated: lastUpdated))
+                }
             }
         } catch {
             print("Failed to execute favicon search query")
-            icons = []
         }
 
         for tab in self {

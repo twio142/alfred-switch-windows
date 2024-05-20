@@ -17,10 +17,6 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
         return self.windowInfoDict["kCGWindowName" as NSObject] != nil
     }
 
-    var windowTitle: String {
-        return self.name
-    }
-
     var number: UInt32 {
         return self.dictItem(key: "kCGWindowNumber", defaultValue: 0)
     }
@@ -82,7 +78,8 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
 
     var searchStrings: [String] {
         let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
-        return [self.processName, self.processName.k3.pinyin([.separator(" ")]), fileName, self.name, self.name.k3.pinyin([.separator(" ")])]
+        let nameMatch = self.name.k3.pinyin([.separator(" ")]).folding(options: .diacriticInsensitive, locale: .current).replacingOccurrences(of: "[^a-zA-Z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines)
+        return [self.processName, self.processName.k3.pinyin([.separator(" ")]), fileName, self.name, nameMatch]
     }
 
     var isVisible : Bool {

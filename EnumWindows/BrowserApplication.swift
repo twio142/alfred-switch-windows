@@ -36,17 +36,15 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
     private let tabRaw : AnyObject
     private let index : Int?
 
-    let windowTitle : String
     let windowIndex : Int
     let processName : String
     let bundleId : String
     let fullPath : String
     var iconPath : String? = ""
 
-    init(raw: AnyObject, index: Int?, windowTitle: String, windowIndex: Int, processName: String, bundleId: String, fullPath: String) {
+    init(raw: AnyObject, index: Int?, windowIndex: Int, processName: String, bundleId: String, fullPath: String) {
         tabRaw = raw
         self.index = index
-        self.windowTitle = windowTitle
         self.windowIndex = windowIndex
         self.processName = processName
         self.bundleId = bundleId
@@ -61,7 +59,7 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         return performSelectorByName(name: "URL", defaultValue: "")
     }
 
-    var title : String {
+    var tabTitle : String {
         /* Safari uses 'name' as the tab title, while most of the browsers have 'title' there */
         if self.rawItem.responds(to: #selector(NSImage.name)) {
             return performSelectorByName(name: "name", defaultValue: "")
@@ -76,13 +74,21 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
         return i
     }
 
+    var id : String {
+        return performSelectorByName(name: "id", defaultValue: "")
+    }
+
+    var location : String {
+        return performSelectorByName(name: "location", defaultValue: "")
+    }
+
     var searchStrings : [String] {
         /* Use also the app's file name in search string */
         let fileName = Bundle(path: self.fullPath)?.infoDictionary?["CFBundleName"] as? String ?? ""
-        let titleMatch = self.title.k3.pinyin([.separator(" ")]).folding(options: .diacriticInsensitive, locale: .current).replacingOccurrences(of: "[^a-zA-Z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines)
+        let titleMatch = self.tabTitle.k3.pinyin([.separator(" ")]).folding(options: .diacriticInsensitive, locale: .current).replacingOccurrences(of: "[^a-zA-Z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines)
         /* Match url only by the core part of its domain */
         let urlMatch = self.url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]).replacingOccurrences(of: "^https?://(www2?\\.|m\\.)?([\\w\\.]+)(\\.co)?(\\.[A-Za-z]+)/?.*", with: "$2", options: [.regularExpression]).replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression])
-        return [urlMatch, self.title.replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines), titleMatch, self.processName, self.processName.k3.pinyin([.separator(" ")]), fileName]
+        return [urlMatch, self.tabTitle.replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines), titleMatch, self.processName, self.processName.k3.pinyin([.separator(" ")]), fileName]
     }
 
     /*
@@ -119,7 +125,7 @@ class BrowserWindow : BrowserNamedEntity {
         let result = performSelectorByName(name: "tabs", defaultValue: [AnyObject]())
 
         return result.enumerated().map { (index, element) in
-            return BrowserTab(raw: element, index: index, windowTitle: self.title, windowIndex: self.windowIndex, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
+            return BrowserTab(raw: element, index: index, windowIndex: self.windowIndex, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
         }
     }
 

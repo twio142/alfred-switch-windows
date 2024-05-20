@@ -11,6 +11,10 @@ func searchBrowserTabsIfNeeded(bundleId: String,
             .filter { !$0.title.isEmpty } // filter out Chrome PWAs
             .flatMap { return $0.tabs }
             .search(query)
+            .sorted { (lhs, rhs) -> Bool in
+                lhs.location == "unpinned" && (rhs.location != "" && rhs.location != "unpinned")
+            }
+
 
     if let browserTabs = browserTabs {
         browserTabs.getIcons()
@@ -22,9 +26,9 @@ func search(query: String, tabMode: Bool) {
     var results : [[AlfredItem]] = []
 
     if tabMode {
-        for browserId in ["com.apple.Safari",
-                                  "com.google.Chrome",
-                                  "company.thebrowser.Browser"] {
+        for browserId in ["company.thebrowser.Browser",
+                          "com.google.Chrome",
+                          "com.apple.Safari"] {
             searchBrowserTabsIfNeeded(bundleId: browserId,
                                       query: query,
                                       results: &results) // inout!
