@@ -24,7 +24,7 @@ func copyDb(name: String) -> URL? {
         try fileManager.copyItem(at: dbFile, to: cache)
         return cache
     } catch {
-        print(error)
+        log(String(describing: error))
         return nil
     }
 }
@@ -40,7 +40,7 @@ func historyDb() -> Connection? {
         try db.run("ATTACH DATABASE ? AS favicons", favicons.path)
         return db
     } catch {
-        print("Failed to attach favicons database to history database")
+        log("Failed to attach favicons database to history database")
         return nil
     }
 }
@@ -61,7 +61,7 @@ func cacheFavicon(blob: Blob, uid: Int64, lastUpdated: TimeInterval) -> URL? {
         try FileManager.default.setAttributes([.modificationDate: Date(timeIntervalSince1970: lastUpdated)], ofItemAtPath: favFile.path)
         return favFile
     } catch {
-        print("Failed to write favicon to cache")
+        log("Failed to write favicon to cache")
         return nil
     }
 }
@@ -69,7 +69,7 @@ func cacheFavicon(blob: Blob, uid: Int64, lastUpdated: TimeInterval) -> URL? {
 extension Array where Element:BrowserTab {
     func getIcons() {
         guard let db = historyDb() else {
-            print("Failed to open history database")
+            log("Failed to open history database")
             return
         }
 
@@ -86,8 +86,8 @@ extension Array where Element:BrowserTab {
                 try db.run(tabsTable.insert(url <- tab.url))
             }
         } catch {
-            print("Failed to create and populate tabs table")
-            print(error)
+            log("Failed to create and populate tabs table")
+            log(String(describing: error))
         }
 
         let CREATE_TEMP_TABLE = """
@@ -102,7 +102,7 @@ extension Array where Element:BrowserTab {
         do {
             try db.run(CREATE_TEMP_TABLE)
         } catch {
-            print("Failed to create temporary table")
+            log("Failed to create temporary table")
         }
 
         let FAVICON_SEARCH = """
@@ -124,7 +124,7 @@ extension Array where Element:BrowserTab {
                 }
             }
         } catch {
-            print("Failed to execute favicon search query")
+            log("Failed to execute favicon search query")
         }
 
         for tab in self {

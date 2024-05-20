@@ -77,6 +77,13 @@ let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflo
 print("TIME SPENT: \(timeInterval)")
 */
 
+func log(_ messages: String...) {
+    let message = messages.joined(separator: " ") + "\n"
+    if let data = message.data(using: .utf8) {
+        FileHandle.standardError.write(data)
+    }
+}
+
 for command in CommandLine.commands() {
     switch command {
     case let searchCommand as WindowsCommand:

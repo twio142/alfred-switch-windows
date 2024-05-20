@@ -40,7 +40,7 @@ class BrowserTab : BrowserNamedEntity, Searchable, ProcessNameProtocol {
     let processName : String
     let bundleId : String
     let fullPath : String
-    var iconPath : String? = ""
+    var iconPath : String? = nil
 
     init(raw: AnyObject, index: Int?, windowIndex: Int, processName: String, bundleId: String, fullPath: String) {
         tabRaw = raw
