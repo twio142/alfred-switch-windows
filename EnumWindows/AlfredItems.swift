@@ -1,5 +1,16 @@
 import Foundation
 
+extension RunningApp : AlfredItem {
+    var title: String { return self.name }
+    var subtitle: String { return self.fullPath }
+    var arg: String { return self.fullPath }
+    var variables: [String : Any] { return ["bundleId": self.bundleId] }
+    var icon: [String : Any] { return ["path": self.fullPath, "type": "fileicon"] }
+    var type: String? { return "file" }
+    var text: [String : Any]? { return nil }
+    var quicklookurl: String? { return nil }
+}
+
 extension WindowInfoDict : AlfredItem {
     var title : String { return self.name };
     var subtitle : String { return self.processName };

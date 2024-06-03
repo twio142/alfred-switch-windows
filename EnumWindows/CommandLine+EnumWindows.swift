@@ -15,16 +15,16 @@ extension CommmandLineCommand {
         let query = argv
             .replacingOccurrences(of: prefix, with: "")
             .replacingOccurrences(of: "\"", with: "")
-        
+
         return self.init(value: query)
     }
 }
 
 struct TabsCommand : CommmandLineCommand {
     internal static var name: String { return "--tab" }
-    
+
     let query : String;
-    
+
     init(value: String) {
         self.query = value
     }
@@ -34,17 +34,28 @@ struct WindowsCommand : CommmandLineCommand {
     internal static var name: String { return "--win" }
 
     let query : String;
-    
+
+    init(value: String) {
+        self.query = value
+    }
+}
+
+struct AppsCommand : CommmandLineCommand {
+    internal static var name: String { return "--app" }
+
+    let query : String;
+
     init(value: String) {
         self.query = value
     }
 }
 
 extension CommandLine {
-    
+
     static func commands() -> [CommmandLineCommand] {
         var result : [CommmandLineCommand?] = []
         for arg in self.arguments {
+            result.append(AppsCommand.fromArgv(argv: arg))
             result.append(WindowsCommand.fromArgv(argv: arg))
             result.append(TabsCommand.fromArgv(argv: arg))
         }

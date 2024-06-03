@@ -22,10 +22,18 @@ func searchBrowserTabsIfNeeded(bundleId: String,
     }
 }
 
-func search(query: String, tabMode: Bool) {
+enum SearchMode {
+    case app
+    case tab
+    case window
+}
+
+func search(query: String, mode: SearchMode) {
     var results : [[AlfredItem]] = []
 
-    if tabMode {
+    if mode == .app {
+        results.append(RunningApps.all.search(query))
+    } else if mode == .tab {
         for browserId in ["company.thebrowser.Browser",
                           "com.google.Chrome",
                           "com.apple.Safari"] {
@@ -33,7 +41,7 @@ func search(query: String, tabMode: Bool) {
                                       query: query,
                                       results: &results) // inout!
         }
-    } else {
+    } else if mode == .window {
         results.append(Windows.all.search(query))
     }
 
@@ -86,15 +94,18 @@ func log(_ messages: String...) {
 
 for command in CommandLine.commands() {
     switch command {
+    case let searchCommand as AppsCommand:
+        search(query: searchCommand.query, mode: .app)
+        exit(0)
     case let searchCommand as WindowsCommand:
-        search(query: searchCommand.query, tabMode: false)
+        search(query: searchCommand.query, mode: .window)
         exit(0)
     case let searchCommand as TabsCommand:
-        search(query: searchCommand.query, tabMode: true)
+        search(query: searchCommand.query, mode: .tab)
         exit(0)
     default:
         print("Usage:")
-        print("[--win=<query>] | [--tab=<query>]")
+        print("[--app=<query>] | [--win=<query>] | [--tab=<query>]")
         exit(1)
     }
 }

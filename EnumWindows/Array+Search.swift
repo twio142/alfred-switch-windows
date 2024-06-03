@@ -1,4 +1,5 @@
 import Foundation
+import K3Pinyin
 
 protocol Searchable {
     var searchStrings : [String] { get }
@@ -29,5 +30,12 @@ extension Array where Element:Searchable {
         }
 
         return result.search(components: components.dropFirst(1))
+    }
+}
+
+extension String {
+    func pinyin() -> String {
+        let check = NSPredicate(format: "SELF MATCHES %@", ".*\\p{Script=Han}.*")
+        return check.evaluate(with: self) ? self.k3.pinyin([.separator(" ")]).folding(options: .diacriticInsensitive, locale: .current) : self
     }
 }

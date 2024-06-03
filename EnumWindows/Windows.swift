@@ -1,6 +1,5 @@
 import Foundation
 import AppKit
-import K3Pinyin
 
 class WindowInfoDict : Searchable, ProcessNameProtocol {
     private let windowInfoDict : Dictionary<NSObject, AnyObject>;
@@ -77,9 +76,9 @@ class WindowInfoDict : Searchable, ProcessNameProtocol {
     }
 
     var searchStrings: [String] {
-        let fileName = self.fullPath.replacingOccurrences(of: ".+/([^/]+)\\.app", with: "$1", options: [.regularExpression])
-        let nameMatch = self.name.k3.pinyin([.separator(" ")]).folding(options: .diacriticInsensitive, locale: .current).replacingOccurrences(of: "[^a-zA-Z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines)
-        return [self.processName, self.processName.k3.pinyin([.separator(" ")]), fileName, self.name, nameMatch]
+        let fileName = URL(fileURLWithPath: self.fullPath).deletingPathExtension().lastPathComponent
+        let nameMatch = self.name.pinyin().replacingOccurrences(of: "[^a-zA-Z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines)
+        return [self.processName, self.processName.pinyin(), fileName, self.name, nameMatch]
     }
 
     var isVisible : Bool {
