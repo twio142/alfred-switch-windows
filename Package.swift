@@ -8,7 +8,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/CrazyFanFan/K3Pinyin", from: "2.0.0"),
-    .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.12.2"),
+    .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
   ],
   targets: [
     .target(
@@ -16,7 +16,9 @@ let package = Package(
       dependencies: [
         "K3Pinyin",
         .product(name: "SQLite", package: "SQLite.swift"),
-        ],
-      path: "EnumWindows")
+      ],
+      path: "EnumWindows"
+    ),
   ]
 )
+

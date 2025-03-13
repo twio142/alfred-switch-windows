@@ -1,3 +1,3 @@
 protocol ProcessNameProtocol {
-    var processName : String { get }
+  var processName: String { get }
 }
