@@ -10,19 +10,24 @@ func copyDb(name: String) -> URL? {
   let cache = cacheDir.appendingPathComponent(name)
   let dbFile = profile.appendingPathComponent(name)
 
-  do {
-    let fileManager = FileManager.default
-    let cacheAttributes = try FileManager.default.attributesOfItem(atPath: cache.path)
-    let cacheModificationDate = cacheAttributes[.modificationDate] as? Date ?? Date()
+  let fileManager = FileManager.default
 
-    if Date().timeIntervalSince(cacheModificationDate) <= 60 {
-      return cache
-    }
+  do {
     if fileManager.fileExists(atPath: cache.path) {
+      let cacheAttributes = try fileManager.attributesOfItem(atPath: cache.path)
+      let cacheModificationDate = cacheAttributes[.modificationDate] as? Date ?? Date()
+
+      if Date().timeIntervalSince(cacheModificationDate) <= 60 {
+        return cache
+      }
       try fileManager.removeItem(at: cache)
     }
-    try fileManager.copyItem(at: dbFile, to: cache)
-    return cache
+
+    if fileManager.fileExists(atPath: dbFile.path) {
+      try fileManager.copyItem(at: dbFile, to: cache)
+      return cache
+    }
+    return nil
   } catch {
     log(String(describing: error))
     return nil
@@ -76,20 +81,21 @@ extension Array where Element: BrowserTab {
     }
 
     let tabsTable = Table("tabs")
-    let url = Expression<String>(value: "url")
+    let urlColumn = SQLite.Expression<String>("url")
 
     do {
       try db.run(tabsTable.drop(ifExists: true))
       try db.run(tabsTable.create { t in
-        t.column(url)
+        t.column(urlColumn)
       })
 
       for tab in self {
-        try db.run(tabsTable.insert(url <- tab.url))
+        try db.run(tabsTable.insert(urlColumn <- tab.url))
       }
     } catch {
       log("Failed to create and populate tabs table")
       log(String(describing: error))
+      return
     }
 
     let CREATE_TEMP_TABLE = """
@@ -105,6 +111,7 @@ extension Array where Element: BrowserTab {
       try db.run(CREATE_TEMP_TABLE)
     } catch {
       log("Failed to create temporary table")
+      return
     }
 
     let FAVICON_SEARCH = """
@@ -128,6 +135,7 @@ extension Array where Element: BrowserTab {
       }
     } catch {
       log("Failed to execute favicon search query")
+      return
     }
 
     for tab in self {
