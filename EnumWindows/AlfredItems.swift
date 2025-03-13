@@ -24,7 +24,7 @@ extension WindowInfoDict: AlfredItem {
 
 extension BrowserTab: AlfredItem {
   var title: String { return "\(location == "pinned" ? "📌 " : (location == "topApp" ? "🔝 " : ""))\(tabTitle)" }
-  var arg: String { return "[\(tabTitle)](\(url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression])))" } // get original url before chrome extension `tab suspender`
+  var arg: String { return "[\(tabTitle)](\(url))" }
   var subtitle: String { return "\(url)" }
   var variables: [String: Any] { return ["tabIndex": tabIndex, "windowIndex": windowIndex, "bundleId": bundleId, "tabId": id] }
   var icon: [String: Any] { if let iconPath = iconPath { return ["path": iconPath] } else { return ["path": fullPath, "type": "fileicon"] } }

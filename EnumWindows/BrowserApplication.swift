@@ -86,7 +86,7 @@ class BrowserTab: BrowserNamedEntity, Searchable, ProcessNameProtocol {
     let fileName = Bundle(path: fullPath)?.infoDictionary?["CFBundleName"] as? String ?? ""
     let titleMatch = tabTitle.pinyin().replacingOccurrences(of: "[^a-zA-Z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines)
     /* Match url only by the core part of its domain */
-    let urlMatch = url.replacingOccurrences(of: "chrome-extension://[a-z]+/suspended.html#.+?&uri=", with: "", options: [.regularExpression]).replacingOccurrences(of: "^https?://(www2?\\.|m\\.)?([\\w\\.]+)(\\.co)?(\\.[A-Za-z]+)/?.*", with: "$2", options: [.regularExpression]).replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression])
+    let urlMatch = url.replacingOccurrences(of: "^https?://(www2?\\.|m\\.)?([\\w\\.]+)(\\.co)?(\\.[A-Za-z]+)/?.*", with: "$2", options: [.regularExpression]).replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression])
     return [urlMatch, tabTitle.replacingOccurrences(of: "[^A-Za-z0-9]", with: " ", options: [.regularExpression]).trimmingCharacters(in: .whitespacesAndNewlines), titleMatch, processName, processName.pinyin(), fileName]
   }
 
