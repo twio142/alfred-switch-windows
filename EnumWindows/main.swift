@@ -16,7 +16,9 @@ func searchBrowserTabsIfNeeded(bundleId: String,
       }
 
   if let browserTabs = browserTabs {
-    browserTabs.getIcons()
+    if let favicon = ProcessInfo.processInfo.environment["show_favicon"], favicon == "1" {
+      browserTabs.getIcons()
+    }
     results.append(browserTabs)
   }
 }
