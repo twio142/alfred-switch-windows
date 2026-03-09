@@ -21,7 +21,9 @@ extension CommmandLineCommand {
 }
 
 struct TabsCommand: CommmandLineCommand {
-  static var name: String { return "--tab" }
+  static var name: String {
+    return "--tab"
+  }
 
   let query: String
 
@@ -31,7 +33,9 @@ struct TabsCommand: CommmandLineCommand {
 }
 
 struct WindowsCommand: CommmandLineCommand {
-  static var name: String { return "--win" }
+  static var name: String {
+    return "--win"
+  }
 
   let query: String
 
@@ -41,7 +45,9 @@ struct WindowsCommand: CommmandLineCommand {
 }
 
 struct AppsCommand: CommmandLineCommand {
-  static var name: String { return "--app" }
+  static var name: String {
+    return "--app"
+  }
 
   let query: String
 

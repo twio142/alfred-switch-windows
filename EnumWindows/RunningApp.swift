@@ -22,4 +22,3 @@ enum RunningApps {
       .map { RunningApp($0) }
   }
 }
-
