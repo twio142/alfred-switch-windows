@@ -36,6 +36,7 @@ func search(query: String, mode: SearchMode) {
     results.append(RunningApps.all.search(query))
   } else if mode == .tab {
     for browserId in ["company.thebrowser.Browser",
+                      "com.vivaldi.Vivaldi",
                       "com.google.Chrome",
                       "com.apple.Safari"]
     {
