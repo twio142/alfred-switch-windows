@@ -41,29 +41,29 @@ class BrowserTab: BrowserNamedEntity, Searchable, ProcessNameProtocol {
   let fullPath: String
   var iconPath: String?
 
-  init(raw: AnyObject, index: Int?, windowIndex: Int, processName: String, bundleId: String, fullPath: String) {
+  /* Fetched up front by BrowserWindow: every property read on a raw tab is an Apple Event round trip */
+  let url: String
+  let tabTitle: String
+  let id: String
+  let location: String
+
+  init(raw: AnyObject, index: Int?, windowIndex: Int, processName: String, bundleId: String, fullPath: String,
+       url: String, tabTitle: String, id: String, location: String)
+  {
     tabRaw = raw
     self.index = index
     self.windowIndex = windowIndex
     self.processName = processName
     self.bundleId = bundleId
     self.fullPath = fullPath
+    self.url = url
+    self.tabTitle = tabTitle
+    self.id = id
+    self.location = location
   }
 
   var rawItem: AnyObject {
     return tabRaw
-  }
-
-  var url: String {
-    return performSelectorByName(name: "URL", defaultValue: "")
-  }
-
-  var tabTitle: String {
-    /* Safari uses 'name' as the tab title, while most of the browsers have 'title' there */
-    if rawItem.responds(to: #selector(NSImage.name)) {
-      return performSelectorByName(name: "name", defaultValue: "")
-    }
-    return performSelectorByName(name: "title", defaultValue: "")
   }
 
   var tabIndex: Int {
@@ -71,14 +71,6 @@ class BrowserTab: BrowserNamedEntity, Searchable, ProcessNameProtocol {
       return 0
     }
     return i
-  }
-
-  var id: String {
-    return performSelectorByName(name: "id", defaultValue: "")
-  }
-
-  var location: String {
-    return performSelectorByName(name: "location", defaultValue: "")
   }
 
   var searchStrings: [String] {
@@ -120,10 +112,37 @@ class BrowserWindow: BrowserNamedEntity {
   }
 
   var tabs: [BrowserTab] {
-    let result = performSelectorByName(name: "tabs", defaultValue: [AnyObject]())
+    let sel = Selector(("tabs"))
+    guard rawItem.responds(to: sel),
+          let elements = rawItem.perform(sel)?.takeRetainedValue() as? SBElementArray
+    else {
+      return []
+    }
 
-    return result.enumerated().map { index, element in
-      BrowserTab(raw: element, index: index, windowIndex: self.windowIndex, processName: self.processName, bundleId: self.bundleId, fullPath: self.fullPath)
+    let rawTabs = elements.compactMap { $0 as AnyObject }
+    guard let first = rawTabs.first else {
+      return []
+    }
+
+    /* One Apple Event per property for all tabs at once, instead of one per tab per read */
+    func fetchAll(_ key: String) -> [String] {
+      guard first.responds(to: Selector(key)) else {
+        return Array(repeating: "", count: rawTabs.count)
+      }
+      let values = elements.value(forKey: key) as? [Any] ?? []
+      return rawTabs.indices.map { $0 < values.count ? (values[$0] as? String ?? "") : "" }
+    }
+
+    /* Safari uses 'name' as the tab title, while most of the browsers have 'title' there */
+    let titles = fetchAll(first.responds(to: #selector(NSImage.name)) ? "name" : "title")
+    let urls = fetchAll("URL")
+    let ids = fetchAll("id")
+    let locations = fetchAll("location")
+
+    return rawTabs.enumerated().map { index, element in
+      BrowserTab(raw: element, index: index, windowIndex: self.windowIndex, processName: self.processName,
+                 bundleId: self.bundleId, fullPath: self.fullPath,
+                 url: urls[index], tabTitle: titles[index], id: ids[index], location: locations[index])
     }
   }
 
