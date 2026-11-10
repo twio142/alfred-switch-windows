@@ -8,7 +8,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/CrazyFanFan/K3Pinyin", from: "2.0.0"),
-    .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
+    .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.17.0"),
   ],
   targets: [
     .target(

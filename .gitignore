@@ -3,5 +3,4 @@
 EnumWindows/EnumWindows
 .DS_Store
 .build/
-Package.resolved
 .vscode/

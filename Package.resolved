@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "K3Pinyin",
+        "repositoryURL": "https://github.com/CrazyFanFan/K3Pinyin",
+        "state": {
+          "branch": null,
+          "revision": "fd15be901768236ea21ff5a9010da66cf3f03308",
+          "version": "2.0.0"
+        }
+      },
+      {
+        "package": "SQLite.swift",
+        "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "4114679379eeb4538638f49ec14e1854dd9cf73c",
+          "version": "0.17.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
